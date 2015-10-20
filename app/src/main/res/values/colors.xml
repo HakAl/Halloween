@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="White">#FFF</color>
+    <color name="Black">#000</color>
+    <color name="Midnight">#111111</color>
+    <color name="Dark">#555</color>
+    <color name="Grey">#7F7F7F</color>
+    <color name="DarkGrey">#4F4F4F</color>
+    <color name="Green">#0F0</color>
+    <color name="TransparentGrey">#00000000</color>
+
+    <!-- Button widget color -->
+    <color name="LightBlack">#aa252525</color>
+    <color name="Pressed">#aaaaaaaa</color>
+
+    <color name="Yellow">#FF0</color>
+    <color name="LightYellow">#f1f100</color>
+    <color name="TransLightYellow">#aaf1f100</color>
+</resources>

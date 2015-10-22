@@ -1,6 +1,7 @@
 package com.jacmobile.spiritdetector.view;
 
 import android.Manifest;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.SurfaceView;
 
@@ -16,51 +17,22 @@ import util.PermissionHelper;
 
 public class ScannerActivity extends BaseActivity
 {
-    @Inject PermissionHelper permissionHelper;
     @Inject CameraPreviewRecorder cameraPreviewRecorder;
 
     @Bind(R.id.camera_preview) SurfaceView cameraPreview;
 
     @Override public void onCreate(Bundle savedInstanceState)
     {
-        getAppComponent().inject(this);
-
         super.onCreate(savedInstanceState);
 
+        getAppComponent().inject(this);
+
         if (savedInstanceState == null) {
-
             setViewContents(R.layout.activity_scanner);
-
             ButterKnife.bind(this);
-
             tryToStartCamera();
-
         } else {
 
-            
-        }
-
-    }
-
-    private void tryToStartCamera()
-    {
-        if (DeviceUtils.hasCameraHardware(this)) {
-            if (permissionHelper.hasPermission(this, Manifest.permission.CAMERA)) {
-                startCameraPreview();
-            } else {
-                permissionHelper.requestPermission(this, Manifest.permission.CAMERA, new PermissionHelper.PermissionListener()
-                {
-                    @Override public void permissionRequestResult(String permission, boolean hasPermission)
-                    {
-                        if (hasPermission) {
-                            startCameraPreview();
-                        }
-                    }
-                });
-            }
-        } else {
-            //ask about camera?
-            //switch to no camera view?
         }
     }
 
@@ -68,7 +40,11 @@ public class ScannerActivity extends BaseActivity
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        permissionHelper.onRequestPermissionsResult(permissions, grantResults);
+        if (requestCode == 9) {
+            startCameraPreview();
+        } else {
+            cameraFailedToStart();
+        }
     }
 
     @Override protected void onPause()
@@ -95,5 +71,28 @@ public class ScannerActivity extends BaseActivity
     private void startCameraPreview()
     {
         cameraPreviewRecorder.onCreate(cameraPreview);
+    }
+
+    private void tryToStartCamera()
+    {
+        if (DeviceUtils.hasCameraHardware(this)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        && PermissionHelper.hasPermission(this, Manifest.permission.CAMERA)) {
+                    startCameraPreview();
+                } else {
+                    String[] perms = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                    requestPermissions(perms, 9);
+                }
+            }
+        } else {
+            cameraFailedToStart();
+        }
+    }
+
+    private void cameraFailedToStart()
+    {
+        //ask about camera?
+        //switch to no camera view?
     }
 }

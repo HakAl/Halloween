@@ -1,47 +1,44 @@
 package camera;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.File;
 import java.io.IOException;
 
-import javax.inject.Inject;
-
 import util.DeviceUtils;
 import util.FileStorage;
 import util.Logger;
-import util.PermissionHelper;
 
 /**
+ * Manifest.permission_group.STORAGE
+ *
+ * Management of Permissions is strongly tied to the life-cycle of an Activity.
  * It is the responsibility of the view to handle acquiring Camera permission.
+ *
+ *
  */
 public class CameraPreviewRecorder implements CameraPreviewListener
 {
     public static final String TAG = CameraPreviewRecorder.class.getSimpleName();
     public static final int DEFAULT_MAX_DURATION = 300000; //5 minutes
 
-    private boolean inView;
-    private Context context;
     private Camera mCamera;
     public SurfaceHolder viewHolder;
     private MediaRecorder mediaRecorder;
     private File mediaFile;
+    private boolean inView;
 
     @Override public void onCreate(@NonNull SurfaceView surfaceView)
     {
         inView = false;
-        this.context = surfaceView.getContext().getApplicationContext();
+
         viewHolder = surfaceView.getHolder();
         viewHolder.addCallback(this);
         viewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -101,28 +98,25 @@ public class CameraPreviewRecorder implements CameraPreviewListener
         }
     }
 
-    @Override public boolean record(String outputFile)
+//    @Override public boolean record(String outputFile)
+    @Override public boolean record(File outputFile)
     {
         if (DeviceUtils.isExternalStorageWritable()) {
             mCamera.lock();
             mCamera.unlock();
             mediaRecorder = getMediaRecorder();
-            if (isSetToRecord(outputFile)) {
-                try {
-                    mediaRecorder.prepare();
-                    mediaRecorder.start();
-                    return true;
-                } catch (IllegalStateException e) {
-                    Logger.exception("MediaRecorder\n" + e.getMessage());
-                    releaseMediaRecorder();
-                    return false;
-                } catch (IOException | RuntimeException e) {
-                    Logger.exception("MediaRecorder\n" + e.getMessage());
-                    releaseMediaRecorder();
-                    return false;
-                }
-            } else {
-                // TODO: 10/18/15
+            mediaRecorder.setOutputFile(outputFile.getPath());
+            try {
+                mediaRecorder.prepare();
+                mediaRecorder.start();
+                return true;
+            } catch (IllegalStateException e) {
+                Logger.exception("MediaRecorder\n" + e.getMessage());
+                releaseMediaRecorder();
+                return false;
+            } catch (IOException | RuntimeException e) {
+                Logger.exception("MediaRecorder\n" + e.getMessage());
+                releaseMediaRecorder();
                 return false;
             }
         } else {
@@ -200,57 +194,27 @@ public class CameraPreviewRecorder implements CameraPreviewListener
         return (result);
     }
 
-    /*
-     * Set up camera to record a video with max length of 5 minutes
-     */
-    private boolean isSetToRecord(String fileName)
-    {
-        try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                if (ContextCompat.checkSelfPermission(context,
-                        Manifest.permission_group.STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                    mediaFile = getMovieFile(fileName);
-                } else {
-                    return false;
-                }
-            } else {
-                mediaFile = getMovieFile(fileName);
-            }
-
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        if (mediaFile != null) {
-            mediaRecorder.setOutputFile(mediaFile.getPath());
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     File getMovieFile(String s)
     {
-        File file;
-        if (DeviceUtils.isExternalStorageWritable()) {
-            file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-            if (file != null) {
-                file = new FileStorage.Builder()
-                        .directoryPath(file.getPath())
-                        .fileName(s)
-                        .createFile();
-            }
-        } else {
-            file = context.getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-            if (file != null) {
-                file = new FileStorage.Builder()
-                        .directoryPath(file.getPath())
-                        .fileName(s)
-                        .createFile();
-            }
+        File file = DeviceUtils.isExternalStorageWritable()
+                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
+                : Environment.getDataDirectory();
+
+        if (file != null) {
+            file = new FileStorage.Builder()
+                    .directoryPath(file.getPath())
+                    .fileName(s)
+                    .createFile();
         }
+
         return file;
+    }
+
+    private String getDirectory()
+    {
+        return DeviceUtils.isExternalStorageWritable()
+                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath()
+                : Environment.DIRECTORY_MOVIES;
     }
 
     private MediaRecorder getMediaRecorder()
@@ -289,8 +253,6 @@ public class CameraPreviewRecorder implements CameraPreviewListener
             mCamera = null;
         }
     }
-
-    @Inject PermissionHelper permissionHelper;
 
     private Camera attemptSetupCamera()
     {
@@ -351,12 +313,5 @@ public class CameraPreviewRecorder implements CameraPreviewListener
                 }
             }
         };
-    }
-
-    private String getDirectory()
-    {
-        return DeviceUtils.isExternalStorageWritable()
-                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath()
-                : Environment.DIRECTORY_MOVIES;
     }
 }

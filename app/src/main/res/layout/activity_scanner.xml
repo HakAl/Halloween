@@ -3,16 +3,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:weightSum="2"
+    android:weightSum="20"
     >
+
+    <!--
+
+ * @attr ref android.support.v7.cardview.R.styleable#CardView_cardBackgroundColor
+ * @attr ref android.support.v7.cardview.R.styleable#CardView_cardCornerRadius
+ * @attr ref android.support.v7.cardview.R.styleable#CardView_cardElevation
+ * @attr ref android.support.v7.cardview.R.styleable#CardView_cardMaxElevation
+ * @attr ref android.support.v7.cardview.R.styleable#CardView_cardUseCompatPadding
+ * @attr ref android.support.v7.cardview.R.styleable#CardView_cardPreventCornerOverlap
+ * @attr ref android.support.v7.cardview.R.styleable#CardView_contentPadding
+    -->
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_margin="16dp"
+        android:layout_weight="14"
+        app:cardCornerRadius="8dp"
+
         >
 
         <LinearLayout
@@ -29,18 +43,17 @@
         </LinearLayout>
     </android.support.v7.widget.CardView>
 
-    <android.support.v7.widget.CardView
+    <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        >
+        android:layout_weight="4"
+        android:background="@color/Green"
+        />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
-
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="@color/colorAccent"/>
 
 </LinearLayout>

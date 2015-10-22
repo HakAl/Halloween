@@ -26,10 +26,10 @@ public class BaseActivity extends AppCompatActivity
 
     public void setViewContents(int resId)
     {
-        contentView.setViewForState(resId, ContentViewState.CONTENT);
+        contentView.setViewForState(resId, ContentViewState.CAMERA_PREVIEW);
     }
 
-//  CONTENT, ERROR, EMPTY, LOADING
+//  CAMERA_PREVIEW, CAMERA_ERROR, EMPTY, LOADING
 
     public void setContentViewState(@ContentViewState.ViewState int contentViewState)
     {

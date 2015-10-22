@@ -12,5 +12,4 @@ import camera.CameraPreviewRecorder;
     {
         return new CameraPreviewRecorder();
     }
-
 }

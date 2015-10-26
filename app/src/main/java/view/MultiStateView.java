@@ -11,13 +11,12 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.jacmobile.spiritdetector.R;
-import com.jacmobile.spiritdetector.view.ContentViewState;
 
-import static com.jacmobile.spiritdetector.view.ContentViewState.CAMERA_PREVIEW;
-import static com.jacmobile.spiritdetector.view.ContentViewState.EMPTY;
-import static com.jacmobile.spiritdetector.view.ContentViewState.CAMERA_ERROR;
-import static com.jacmobile.spiritdetector.view.ContentViewState.LOADING;
-import static com.jacmobile.spiritdetector.view.ContentViewState.ViewState;
+import static view.MultiStateViewState.CONTENT;
+import static view.MultiStateViewState.EMPTY;
+import static view.MultiStateViewState.ERROR;
+import static view.MultiStateViewState.LOADING;
+import static view.MultiStateViewState.ViewState;
 
 /**
  * View that contains 4 different states: Content, Error, Empty, and Loading.<br>
@@ -38,8 +37,8 @@ public class MultiStateView extends FrameLayout {
 
     private View mEmptyView;
 
-    @ContentViewState.ViewState
-    private int mViewState = CAMERA_PREVIEW;
+    @MultiStateViewState.ViewState
+    private int mViewState = CONTENT;
 
     public MultiStateView(Context context) {
         this(context, null);
@@ -77,15 +76,15 @@ public class MultiStateView extends FrameLayout {
             addView(mErrorView, mErrorView.getLayoutParams());
         }
 
-        int viewState = a.getInt(R.styleable.MultiStateView_msv_viewState, CAMERA_PREVIEW);
+        int viewState = a.getInt(R.styleable.MultiStateView_msv_viewState, CONTENT);
 
         switch (viewState) {
-            case CAMERA_PREVIEW:
-                mViewState = CAMERA_PREVIEW;
+            case CONTENT:
+                mViewState = CONTENT;
                 break;
 
-            case CAMERA_ERROR:
-                mViewState = CAMERA_ERROR;
+            case ERROR:
+                mViewState = ERROR;
                 break;
 
             case EMPTY:
@@ -164,13 +163,13 @@ public class MultiStateView extends FrameLayout {
             case LOADING:
                 return mLoadingView;
 
-            case CAMERA_PREVIEW:
+            case CONTENT:
                 return mContentView;
 
             case EMPTY:
                 return mEmptyView;
 
-            case CAMERA_ERROR:
+            case ERROR:
                 return mErrorView;
 
             default:
@@ -227,7 +226,7 @@ public class MultiStateView extends FrameLayout {
                 if (mContentView != null) mContentView.setVisibility(View.GONE);
                 break;
 
-            case CAMERA_ERROR:
+            case ERROR:
                 if (mErrorView == null) {
                     throw new NullPointerException("Error View");
                 }
@@ -238,7 +237,7 @@ public class MultiStateView extends FrameLayout {
                 if (mEmptyView != null) mEmptyView.setVisibility(View.GONE);
                 break;
 
-            case CAMERA_PREVIEW:
+            case CONTENT:
             default:
                 if (mContentView == null) {
                     // Should never happen, the view should throw an exception if no content view is present upon creation
@@ -288,13 +287,13 @@ public class MultiStateView extends FrameLayout {
                 addView(mEmptyView);
                 break;
 
-            case CAMERA_ERROR:
+            case ERROR:
                 if (mErrorView != null) removeView(mErrorView);
                 mErrorView = view;
                 addView(mErrorView);
                 break;
 
-            case CAMERA_PREVIEW:
+            case CONTENT:
                 if (mContentView != null) removeView(mContentView);
                 mContentView = view;
                 addView(mContentView);

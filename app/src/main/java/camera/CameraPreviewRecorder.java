@@ -32,8 +32,8 @@ public class CameraPreviewRecorder implements CameraPreviewListener
     private Camera mCamera;
     public SurfaceHolder viewHolder;
     private MediaRecorder mediaRecorder;
-    private File mediaFile;
     private boolean inView;
+    private File mediaFile;
 
     @Override public void onCreate(@NonNull SurfaceView surfaceView)
     {
@@ -105,6 +105,7 @@ public class CameraPreviewRecorder implements CameraPreviewListener
             mCamera.lock();
             mCamera.unlock();
             mediaRecorder = getMediaRecorder();
+            this.mediaFile = outputFile;
             mediaRecorder.setOutputFile(outputFile.getPath());
             try {
                 mediaRecorder.prepare();

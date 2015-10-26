@@ -7,36 +7,50 @@ import com.jacmobile.spiritdetector.R;
 
 import app.App;
 import di.components.AppComponent;
+import icepick.Icepick;
+import icepick.Icicle;
 import util.Logger;
 import view.MultiStateView;
+import view.MultiStateViewState;
 
-public class BaseActivity extends AppCompatActivity
+public abstract class BaseActivity extends AppCompatActivity
 {
+    public static final String TAG = BaseActivity.class.getSimpleName();
+
+    @Icicle private @MultiStateViewState.ViewState int viewState;
+
     private MultiStateView contentView;
 
+    /** @param toLog String to output if build is debug */
     public void log(String toLog)
     {
         Logger.debugLog(toLog);
     }
 
+    /** Get the AppComponent to inject() into the object graph. */
     public AppComponent getAppComponent()
     {
         return ((App) getApplication()).getAppComponent();
     }
 
-    public void setViewContents(int resId)
+    public void setBaseContentView(int layoutResId)
     {
-        contentView.setViewForState(resId, ContentViewState.CAMERA_PREVIEW);
+        this.viewState = MultiStateViewState.CONTENT;
+        contentView.setViewForState(layoutResId, viewState);
     }
 
-//  CAMERA_PREVIEW, CAMERA_ERROR, EMPTY, LOADING
-
-    public void setContentViewState(@ContentViewState.ViewState int contentViewState)
+    /** CONTENT, ERROR, EMPTY, LOADING */
+    private void setContentViewState(@MultiStateViewState.ViewState int contentViewState)
     {
-        contentView.setViewState(contentViewState);
-    }
+        this.viewState = contentViewState;
 
-////Android life-cycle methods
+        if (contentView != null) {
+            contentView.setViewState(contentViewState);
+        } else {
+            // TODO: 10/25/15
+
+        }
+    }
 
     @Override public void onCreate(Bundle savedInstanceState)
     {
@@ -44,18 +58,12 @@ public class BaseActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_view);
         this.contentView = (MultiStateView) findViewById(R.id.content_view);
+        Icepick.restoreInstanceState(this, savedInstanceState);
     }
 
     @Override protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-//        contentView.getViewState()
-
-    }
-
-    @Override protected void onRestoreInstanceState(Bundle savedInstanceState)
-    {
-        super.onRestoreInstanceState(savedInstanceState);
-//        setContentViewState();
+        Icepick.saveInstanceState(this, outState);
     }
 }

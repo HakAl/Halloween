@@ -14,4 +14,13 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <style name="Tabs">
+        <item name="actionMenuTextColor">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">@color/White</item>
+        <item name="android:textColorSecondary">@color/off_white</item>
+        <item name="colorControlNormal">@color/Pressed</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="android:background">@color/colorPrimaryDark</item>
+    </style>
+
 </resources>

@@ -1,9 +1,15 @@
 package com.jacmobile.spiritdetector.view;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.jacmobile.spiritdetector.R;
 
@@ -15,53 +21,41 @@ import camera.CameraPreviewRecorder;
 import util.DeviceUtils;
 import util.PermissionHelper;
 
-public class ScannerActivity extends BaseActivity
+public class CameraPreviewFragment extends Fragment
 {
     @Inject CameraPreviewRecorder cameraPreviewRecorder;
 
     @Bind(R.id.camera_preview) SurfaceView cameraPreview;
 
-    @Override public void onCreate(Bundle savedInstanceState)
+    @Override public void onAttach(Context context)
     {
-        super.onCreate(savedInstanceState);
-
-        getAppComponent().inject(this);
-
-        if (savedInstanceState == null) {
-            setViewContents(R.layout.activity_scanner);
-            ButterKnife.bind(this);
-            tryToStartCamera();
-        } else {
-
-        }
+        super.onAttach(context);
+        ((BaseActivity) getActivity()).getAppComponent().inject(this);
     }
 
-    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    @Nullable @Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == 9) {
-            startCameraPreview();
-        } else {
-            cameraFailedToStart();
-        }
+        View root = inflater.inflate(R.layout.camera_preview_fragment, container, false);
+        ButterKnife.bind(this, root);
+        tryToStartCamera();
+        return root;
     }
 
-    @Override protected void onPause()
+    @Override public void onPause()
     {
         super.onPause();
 
         cameraPreviewRecorder.onPause();
     }
 
-    @Override protected void onResume()
+    @Override public void onResume()
     {
         super.onResume();
 
         cameraPreviewRecorder.onResume();
     }
 
-    @Override protected void onDestroy()
+    @Override public void onDestroy()
     {
         super.onDestroy();
 
@@ -75,10 +69,10 @@ public class ScannerActivity extends BaseActivity
 
     private void tryToStartCamera()
     {
-        if (DeviceUtils.hasCameraHardware(this)) {
+        if (DeviceUtils.hasCameraHardware(getActivity())) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        && PermissionHelper.hasPermission(this, Manifest.permission.CAMERA)) {
+                if (PermissionHelper.hasPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        && PermissionHelper.hasPermission(getActivity(), Manifest.permission.CAMERA)) {
                     startCameraPreview();
                 } else {
                     String[] perms = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};

@@ -1,0 +1,27 @@
+// TODO:
+
+tabs --> camera preview / file storage / media viewer
+
+X add Icepick to BaseActivity
+
+X SensorMangager / Magnetometer setup
+Tie in android.hardware.GeomagneticField
+
+Control buttons for media player
+storage for sensor data Realm? or ?
+
+
+---
+
+vibrate on high sensor reading
+
+add settings button. where?
+make settings screen. sampling interval
+add magnetometer calibration to settings
+
+---
+
+GCM
+server to accept data to compare
+
+video sharing

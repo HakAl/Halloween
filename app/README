@@ -1,14 +1,20 @@
 // TODO:
+// TODO:
+// TODO:
 
 tabs --> camera preview / file storage / media viewer
 
-X add Icepick to BaseActivity
+camera preview widget controls
+magnetometer output panel
 
-X SensorMangager / Magnetometer setup
+X SensorMangager / Magnetometer setup --> untested
 Tie in android.hardware.GeomagneticField
 
+media player fragment VideoView?
 Control buttons for media player
+
 storage for sensor data Realm? or ?
+storage for video files
 
 
 ---

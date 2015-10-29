@@ -22,7 +22,7 @@
         >
 
         <activity
-            android:name=".view.TabActivity"
+            android:name=".view.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/NoTitle"

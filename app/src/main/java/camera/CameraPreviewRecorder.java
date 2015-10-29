@@ -1,5 +1,7 @@
 package camera;
 
+import android.app.Application;
+import android.content.Context;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -27,18 +29,21 @@ import util.Logger;
 public class CameraPreviewRecorder implements CameraPreviewListener
 {
     public static final String TAG = CameraPreviewRecorder.class.getSimpleName();
+
     public static final int DEFAULT_MAX_DURATION = 300000; //5 minutes
 
     private Camera mCamera;
-    public SurfaceHolder viewHolder;
-    private MediaRecorder mediaRecorder;
-    private boolean inView;
-    private File mediaFile;
 
+    public SurfaceHolder viewHolder;
+
+    private MediaRecorder mediaRecorder;
+
+    /**
+     *
+     * @param surfaceView {@link android.view.SurfaceView}
+     */
     @Override public void onCreate(@NonNull SurfaceView surfaceView)
     {
-        inView = false;
-
         viewHolder = surfaceView.getHolder();
         viewHolder.addCallback(this);
         viewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -59,10 +64,7 @@ public class CameraPreviewRecorder implements CameraPreviewListener
     {
         releaseMediaRecorder();
         if (mCamera != null) {
-            if (inView) {
-                mCamera.stopPreview();
-                inView = false;
-            }
+            mCamera.stopPreview();
         }
         releaseCamera();
     }
@@ -87,9 +89,6 @@ public class CameraPreviewRecorder implements CameraPreviewListener
                 mediaRecorder.stop();
                 return true;
             } catch (RuntimeException stopException) {
-                if (mediaFile != null && mediaFile.exists()) {
-                    mediaFile.delete();
-                }
                 return false;
             }
         } else {
@@ -98,14 +97,12 @@ public class CameraPreviewRecorder implements CameraPreviewListener
         }
     }
 
-//    @Override public boolean record(String outputFile)
     @Override public boolean record(File outputFile)
     {
         if (DeviceUtils.isExternalStorageWritable()) {
             mCamera.lock();
             mCamera.unlock();
             mediaRecorder = getMediaRecorder();
-            this.mediaFile = outputFile;
             mediaRecorder.setOutputFile(outputFile.getPath());
             try {
                 mediaRecorder.prepare();
@@ -144,7 +141,6 @@ public class CameraPreviewRecorder implements CameraPreviewListener
                     params.setPreviewSize(size.width, size.height);
                     mCamera.setParameters(params);
                     mCamera.startPreview();
-                    inView = true;
 
                 } else {
                     // TODO: 10/18/15
@@ -155,7 +151,6 @@ public class CameraPreviewRecorder implements CameraPreviewListener
 
             try {
                 mCamera.setPreviewDisplay(viewHolder);
-//          Make her portrait.
                 mCamera.setDisplayOrientation(90);
             } catch (Throwable t) {
                 Logger.exception("Camera not loaded. Exception in setViewDisplay()");
@@ -193,29 +188,6 @@ public class CameraPreviewRecorder implements CameraPreviewListener
             }
         }
         return (result);
-    }
-
-    File getMovieFile(String s)
-    {
-        File file = DeviceUtils.isExternalStorageWritable()
-                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES)
-                : Environment.getDataDirectory();
-
-        if (file != null) {
-            file = new FileStorage.Builder()
-                    .directoryPath(file.getPath())
-                    .fileName(s)
-                    .createFile();
-        }
-
-        return file;
-    }
-
-    private String getDirectory()
-    {
-        return DeviceUtils.isExternalStorageWritable()
-                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).getPath()
-                : Environment.DIRECTORY_MOVIES;
     }
 
     private MediaRecorder getMediaRecorder()
@@ -301,11 +273,6 @@ public class CameraPreviewRecorder implements CameraPreviewListener
                             mediaRecorder.stop();
                         } catch (RuntimeException stopException) {
                             Logger.debugLog(stopException.toString());
-                            if (mediaFile != null && mediaFile.exists() && mediaFile.delete()) {
-                                Logger.debugLog("An error occurred stopping MediaRecorder. The corrupted file was deleted.");
-                            } else {
-                                Logger.debugLog("An error occurred stopping MediaRecorder. The corrupted file was not deleted.");
-                            }
                         }
                     } else {
                         Logger.debugLog("MediaRecorder was null.");

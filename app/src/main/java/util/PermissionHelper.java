@@ -38,13 +38,15 @@ public class PermissionHelper
         return activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-//    @TargetApi(Build.VERSION_CODES.M)
-//    public static boolean hasPermission(@NonNull Activity activity, @NonNull String[] permissions)
-//    {
-//        boolean hasPermission =
-//        for (String s : permissions) {
-//
-//        }
-//        return activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
-//    }
+    /**
+     * @param permissions android.Manifest.permissions
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    public static boolean hasPermission(@NonNull Activity activity, @NonNull String[] permissions)
+    {
+        for (String s : permissions) {
+            if (!hasPermission(activity, s)) return false;
+        }
+        return true;
+    }
 }

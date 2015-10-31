@@ -7,22 +7,23 @@
     android:orientation="vertical"
     >
 
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tabs_halloween"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        style="@style/Tabs"
+        android:theme="@style/Tabs"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager_halloween"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/tabs_halloween"
-        />
-
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs_halloween"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="16dp"
-        android:theme="@style/tabs"
-        app:tabGravity="fill"
-        app:tabMode="fixed"
+        android:layout_below="@id/tabs_halloween"
+        android:background="#111"
         />
 
 </RelativeLayout>

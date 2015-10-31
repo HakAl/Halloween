@@ -3,8 +3,9 @@
 
     <string name="app_name">Halloween</string>
 
-    <string name="tab_camera">Camera Preview</string>
-    <string name="tab_files">File Storage</string>
-    <string name="tab_media">Media Viewer</string>
+    <string name="tab_camera">Camera</string>
+    <string name="tab_files">Files</string>
+    <string name="tab_media">Video</string>
+    <string name="units">&#956;T</string>
 
 </resources>

@@ -1,46 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/colorPrimary"
     android:orientation="vertical"
     android:weightSum="20"
     >
 
-    <!--
-
- * @attr ref android.support.v7.cardview.R.styleable#CardView_cardBackgroundColor
- * @attr ref android.support.v7.cardview.R.styleable#CardView_cardCornerRadius
- * @attr ref android.support.v7.cardview.R.styleable#CardView_cardElevation
- * @attr ref android.support.v7.cardview.R.styleable#CardView_cardMaxElevation
- * @attr ref android.support.v7.cardview.R.styleable#CardView_cardUseCompatPadding
- * @attr ref android.support.v7.cardview.R.styleable#CardView_cardPreventCornerOverlap
- * @attr ref android.support.v7.cardview.R.styleable#CardView_contentPadding
-    -->
-
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="8dp"
         android:layout_weight="14"
-        app:cardCornerRadius="8dp"
-
+        app:cardCornerRadius="0dp"
         >
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >
-
             <SurfaceView
                 android:id="@+id/camera_preview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-
         </LinearLayout>
     </android.support.v7.widget.CardView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="6"
+        >
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
 
 </LinearLayout>

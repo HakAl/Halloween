@@ -1,4 +1,4 @@
-package com.jacmobile.spiritdetector;
+package com.jacmobile.halloween;
 
 import org.junit.Test;
 

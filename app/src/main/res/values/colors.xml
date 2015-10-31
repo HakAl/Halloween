@@ -1,24 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#303F9F</color>
-    <color name="colorPrimaryDark">#19198d</color>
-    <color name="colorAccent">#FF9100</color>
+    <!--<color name="colorPrimary">@color/light_black</color>-->
+    <!--<color name="colorPrimaryDark">@color/Black</color>-->
+    <!--<color name="colorAccent">#FF9100</color>-->
 
     <color name="White">#FFF</color>
+    <color name="text_white">#dedede</color>
     <color name="off_white">#ccc</color>
-    <color name="Black">#000</color>
     <color name="Midnight">#111111</color>
+    <color name="off_black">#1d1d1d</color>
     <color name="Dark">#555</color>
     <color name="Grey">#7F7F7F</color>
     <color name="DarkGrey">#4F4F4F</color>
     <color name="Green">#0F0</color>
     <color name="TransparentGrey">#00000000</color>
 
-    <!-- Button widget color -->
-    <color name="LightBlack">#aa252525</color>
+    <color name="light_black">#252525</color>
     <color name="Pressed">#aaaaaaaa</color>
 
     <color name="Yellow">#FF0</color>
     <color name="LightYellow">#f1f100</color>
     <color name="TransLightYellow">#aaf1f100</color>
+    <color name="fog">#aafafafa</color>
+    <color name="dim_fog">#cceaeaea</color>
+    <color name="grey_fog">#aab3b3b3</color>
+    <color name="grey">#8c8c8c</color>
+    <color name="dark_grey">#424242</color>
+    <color name="steel">#aacdcddd</color>
+    <color name="white">#fff</color>
+    <color name="black">#000</color>
+
+    <color name="orange">#ffffdc7e</color>
+    <color name="green">#ff8dd304</color>
+    <color name="neon_green">#0f0</color>
+    <color name="light_green">#76ff03</color>
+    <color name="blue">#0091ea</color>
+    <color name="pressed_blue">#0277bd</color>
+    <color name="yellow">#fffffbae</color>
+    <color name="red">#fff10800</color>
+    <color name="list_item_pressed">#1A000000</color>
 </resources>

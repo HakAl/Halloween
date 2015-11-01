@@ -5,6 +5,7 @@ public class SensorData
     private float x;
     private float y;
     private float z;
+    private float average;
     private int accuracy;
     private long timeStamp;
 
@@ -15,11 +16,12 @@ public class SensorData
         fromString(toParse);
     }
 
-    public SensorData(float x, float y, float z, int accuracy, long timeStamp)
+    public SensorData(float x, float y, float z, float average, int accuracy, long timeStamp)
     {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.average = average;
         this.accuracy = accuracy;
         this.timeStamp = timeStamp;
     }
@@ -32,6 +34,7 @@ public class SensorData
                 if (pair[0].equals("x")) x = Float.parseFloat(pair[1]);
                 if (pair[0].equals("y")) y = Float.parseFloat(pair[1]);
                 if (pair[0].equals("z")) z = Float.parseFloat(pair[1]);
+                if (pair[0].equals("average")) average = Integer.parseInt(pair[1]);
                 if (pair[0].equals("accuracy")) accuracy = Integer.parseInt(pair[1]);
                 if (pair[0].equals("timeStamp")) timeStamp = Long.parseLong(pair[1]);
             }
@@ -44,6 +47,7 @@ public class SensorData
                 "x=" + x +
                 ", y=" + y +
                 ", z=" + z +
+                ", average=" + average +
                 ", accuracy=" + accuracy +
                 ", timeStamp=" + timeStamp +
                 '}';
@@ -77,6 +81,16 @@ public class SensorData
     public void setZ(float z)
     {
         this.z = z;
+    }
+
+    public float getAverage()
+    {
+        return average;
+    }
+
+    public void setAverage(float average)
+    {
+        this.average = average;
     }
 
     public int getAccuracy()

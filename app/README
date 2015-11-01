@@ -2,12 +2,12 @@
 // TODO:
 // TODO:
 
-tabs --> camera preview / file storage / media viewer
+X tabs --> camera preview / file storage / media viewer
 
 camera preview widget controls
-magnetometer output panel
+X magnetometer output panel
 
-X SensorMangager / Magnetometer setup --> untested
+X SensorMangager / Magnetometer setup
 Tie in android.hardware.GeomagneticField
 
 media player fragment VideoView?

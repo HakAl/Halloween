@@ -16,7 +16,6 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     public static final String TAG = ActivityLifecycleMonitor.class.getSimpleName();
 
     private List<Observer> observers = new ArrayList<>();
-    private String message;
     private boolean changed;
     private final Object mutex = new Object();
 
@@ -49,7 +48,10 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     @Override public void register(@NonNull Observer obj)
     {
         synchronized (mutex) {
-            if (!observers.contains(obj)) observers.add(obj);
+            if (!observers.contains(obj)) {
+                obj.setSubject(this);
+                observers.add(obj);
+            }
         }
     }
 
@@ -76,16 +78,16 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
         }
     }
 
+    /**
+     * @return isApplicationInForeground() ? resumed or paused
+     */
     @Override public Object getUpdate(@NonNull Observer obj)
     {
-        return this.message;
+        return isApplicationInForeground();
     }
 
-    //method to post message to the topic
-    public void postMessage(@NonNull String msg)
+    public void postUpdate()
     {
-        System.out.println("Message Posted to Topic:" + msg);
-        this.message = msg;
         this.changed = true;
         notifyObservers();
     }
@@ -95,13 +97,7 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
         ++resumed;
         Logger.debugLog(BuildConfig.APPLICATION_ID + " is visible: " + (started > stopped));
         this.currentState.setActivityState(Lifecycle.RESUMED);
-    }
-
-    @Override public void onActivityStarted(Activity activity)
-    {
-        ++started;
-        Logger.debugLog(BuildConfig.APPLICATION_ID + " is in foreground: " + (resumed > paused));
-        this.currentState.setActivityState(Lifecycle.STARTED);
+        postUpdate();
     }
 
     @Override public void onActivityPaused(Activity activity)
@@ -109,6 +105,14 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
         ++paused;
         Logger.debugLog(BuildConfig.APPLICATION_ID + " is in foreground: " + (resumed > paused));
         this.currentState.setActivityState(Lifecycle.PAUSED);
+        postUpdate();
+    }
+
+    @Override public void onActivityStarted(Activity activity)
+    {
+        ++started;
+        Logger.debugLog(BuildConfig.APPLICATION_ID + " is in foreground: " + (resumed > paused));
+        this.currentState.setActivityState(Lifecycle.STARTED);
     }
 
     @Override public void onActivityStopped(Activity activity)

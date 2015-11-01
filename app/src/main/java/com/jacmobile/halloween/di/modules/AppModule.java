@@ -8,9 +8,13 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+
+import com.jacmobile.halloween.app.ActivityLifecycleMonitor;
 import com.jacmobile.halloween.app.App;
 import com.jacmobile.halloween.presenter.sensors.Magnetometer;
 import com.jacmobile.halloween.util.ForApplication;
+import com.squareup.otto.Bus;
+import com.squareup.otto.ThreadEnforcer;
 
 @Module public class AppModule
 {
@@ -26,6 +30,13 @@ import com.jacmobile.halloween.util.ForApplication;
         return this.app;
     }
 
+    @Provides @Singleton ActivityLifecycleMonitor provideActivityLifecycleMonitor()
+    {
+        ActivityLifecycleMonitor lifecycleMonitor = new ActivityLifecycleMonitor();
+        app.registerActivityLifecycleCallbacks(lifecycleMonitor);
+        return lifecycleMonitor;
+    }
+
     @Provides @Singleton SensorManager provideSensorManager()
     {
         return (SensorManager) app.getSystemService(Context.SENSOR_SERVICE);
@@ -34,5 +45,10 @@ import com.jacmobile.halloween.util.ForApplication;
     @Provides @Singleton Magnetometer provideMagnetometer(SensorManager sensorManager)
     {
         return new Magnetometer(sensorManager);
+    }
+
+    @Provides @Singleton Bus provideBus()
+    {
+        return new Bus(ThreadEnforcer.ANY);
     }
 }

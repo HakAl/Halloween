@@ -1,6 +1,7 @@
 package com.jacmobile.halloween.di.components;
 
 import com.jacmobile.halloween.di.modules.AppModule;
+import com.jacmobile.halloween.presenter.sensors.MagnetometerService;
 import com.jacmobile.halloween.view.BaseActivity;
 import com.jacmobile.halloween.view.CameraPreviewFragment;
 import com.jacmobile.halloween.view.MainActivity;
@@ -20,4 +21,6 @@ public interface AppComponent
     void inject(MainActivity activity);
 
     void inject(CameraPreviewFragment fragment);
+
+    void inject(MagnetometerService service);
 }

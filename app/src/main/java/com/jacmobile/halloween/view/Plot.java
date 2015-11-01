@@ -1,8 +1,6 @@
 package com.jacmobile.halloween.view;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.hardware.SensorManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,10 @@ import com.jacmobile.halloween.presenter.sensors.Magnetometer;
 
 import java.text.DecimalFormat;
 
-public class Plot
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton public class Plot
 {
     public static final int HISTORY_SIZE = 66;
 
@@ -27,6 +28,8 @@ public class Plot
     private SimpleXYSeries ySeries = null;
     private SimpleXYSeries zSeries = null;
     private XYPlot sensorPlot;
+
+    @Inject Plot() {}
 
     public void initialize(ViewGroup viewGroup)
     {
@@ -53,6 +56,10 @@ public class Plot
         ySeries.useImplicitXVals();
         zSeries.useImplicitXVals();
 
+        sensorPlot.setPlotMargins(0, 0, 0, 0);
+        sensorPlot.setPlotPadding(0, 0, 0, 0);
+
+        sensorPlot.setBorderStyle(com.androidplot.Plot.BorderStyle.SQUARE, null, null);
         sensorPlot.addSeries(xSeries, new LineAndPointFormatter(
                 context.getResources().getColor(R.color.red), null, null, null));
         sensorPlot.addSeries(ySeries, new LineAndPointFormatter(

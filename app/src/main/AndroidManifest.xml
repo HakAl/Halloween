@@ -21,6 +21,8 @@
         android:theme="@style/AppTheme"
         >
 
+        <service android:name=".presenter.sensors.MagnetometerService" />
+
         <activity
             android:name="com.jacmobile.halloween.view.MainActivity"
             android:label="@string/app_name"

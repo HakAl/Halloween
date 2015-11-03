@@ -40,7 +40,7 @@ public abstract class BaseActivity extends AppCompatActivity
     }
 
     /** CONTENT, ERROR, EMPTY, LOADING */
-    private void setContentViewState(@MultiStateViewState.ViewState int contentViewState)
+    public void setContentViewState(@MultiStateViewState.ViewState int contentViewState)
     {
         this.viewState = contentViewState;
 
@@ -48,7 +48,6 @@ public abstract class BaseActivity extends AppCompatActivity
             contentView.setViewState(contentViewState);
         } else {
             // TODO: 10/25/15
-
         }
     }
 

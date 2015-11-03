@@ -112,4 +112,14 @@ public class SensorData
     {
         this.timeStamp = timeStamp;
     }
+
+    public void clear()
+    {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.average = 0;
+        this.accuracy = 0;
+        this.timeStamp = 0;
+    }
 }

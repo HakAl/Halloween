@@ -1,8 +1,11 @@
 package com.jacmobile.halloween.presenter.camera;
 
+import android.app.Service;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.SurfaceHolder;
@@ -11,89 +14,83 @@ import android.view.SurfaceView;
 import java.io.File;
 import java.io.IOException;
 
+import com.jacmobile.halloween.app.App;
 import com.jacmobile.halloween.util.DeviceUtils;
 import com.jacmobile.halloween.util.Logger;
 
 /**
  * Manifest.permission_group.STORAGE
- *
- * Management of Permissions is strongly tied to the life-cycle of an Activity.
- * It is the responsibility of the view to handle acquiring Camera permission.
- *
- *
+ * <p/>
+ * Management of Permissions is strongly tied to the life-cycle of an Activity. It is the
+ * responsibility of the view to handle acquiring Camera permission.
  */
-public class CameraPreviewRecorder implements CameraPreviewListener
+public class CameraPreviewRecorder extends Service implements CameraPreviewService
 {
     public static final String TAG = CameraPreviewRecorder.class.getSimpleName();
 
     public static final int DEFAULT_MAX_DURATION = 300000; //5 minutes
 
     private Camera mCamera;
-
-    public SurfaceHolder viewHolder;
-
+    private SurfaceHolder viewHolder;
     private MediaRecorder mediaRecorder;
+    private CameraFailureListener cameraFailureListener;
 
-    /**
-     *
-     * @param surfaceView {@link android.view.SurfaceView}
-     */
-    @Override public void onCreate(@NonNull SurfaceView surfaceView)
-    {
-        viewHolder = surfaceView.getHolder();
-        viewHolder.addCallback(this);
-        viewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-    }
-
-    /**
-     * Call in Activity onResume() life-cycle method.
-     */
-    @Override public void onResume()
-    {
-        this.mCamera = attemptSetupCamera();
-    }
-
-    /**
-     * Call in Activity onPause() life-cycle method.
-     */
-    @Override public void onPause()
-    {
-        releaseMediaRecorder();
-        if (mCamera != null) {
-            mCamera.stopPreview();
-        }
-        releaseCamera();
-    }
-
-    /**
-     * Call in Activity onDestroy() life-cycle method.
-     */
     @Override public void onDestroy()
     {
-        releaseMediaRecorder();
-        if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
-        }
+        this.cameraFailureListener = null;
+        this.mCamera = null;
+        this.mediaRecorder = null;
+        this.cameraFailureListener = null;
+        super.onDestroy();
+    }
+
+    @Override public void onCreate()
+    {
+        super.onCreate();
+        ((App) getApplicationContext()).getAppComponent().inject(this);
+    }
+
+    @Override public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        return START_NOT_STICKY;
     }
 
     @Override public boolean stop()
     {
-        releaseMediaRecorder();
-        if (mediaRecorder != null) {
-            try {
-                mediaRecorder.stop();
-                return true;
-            } catch (RuntimeException stopException) {
-                return false;
-            }
+        this.viewHolder = null;
+        if ((mCamera != null) && (mediaRecorder != null)) {
+            stopMediaRecorder();
+            releaseCamera();
+            return true;
         } else {
-            // TODO: 10/18/15
+            if (mediaRecorder != null) {
+                stopMediaRecorder();
+            } else {
+                Logger.exception("MediaRecorder was null, unable to stop recording.");
+            }
+            if (mCamera != null) {
+                releaseCamera();
+            } else {
+                Logger.exception("Camera was null, unable to release.");
+            }
             return false;
         }
     }
 
-    @Override public boolean record(File outputFile)
+    @Override public void startCameraPreview(@NonNull SurfaceView surfaceView, CameraFailureListener cameraFailureListener)
+    {
+        this.cameraFailureListener = cameraFailureListener;
+
+        viewHolder = surfaceView.getHolder();
+        viewHolder.addCallback(this);
+        viewHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+
+        this.mCamera = attemptSetupCamera();
+        if (mCamera == null) cameraFailureListener.onCameraSetupFailed();
+        stop();
+    }
+
+    @Override public boolean startRecording(@NonNull File outputFile)
     {
         if (DeviceUtils.isExternalStorageWritable()) {
             mCamera.lock();
@@ -106,15 +103,15 @@ public class CameraPreviewRecorder implements CameraPreviewListener
                 return true;
             } catch (IllegalStateException e) {
                 Logger.exception("MediaRecorder\n" + e.getMessage());
-                releaseMediaRecorder();
+                stop();
                 return false;
             } catch (IOException | RuntimeException e) {
                 Logger.exception("MediaRecorder\n" + e.getMessage());
-                releaseMediaRecorder();
+                stop();
                 return false;
             }
         } else {
-            releaseMediaRecorder();
+            stop();
             return false;
         }
     }
@@ -122,51 +119,47 @@ public class CameraPreviewRecorder implements CameraPreviewListener
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h)
     {
-        if (mCamera == null) {
-            mCamera = attemptSetupCamera();
-        }
+        Camera.Parameters params = mCamera.getParameters();
+        if (params != null) {
+            Camera.Size size = getBestPreviewSize(w, h, params);
 
-        if (mCamera != null) {
-            Camera.Parameters params = mCamera.getParameters();
-            if (params != null) {
-
-                Camera.Size size = getBestPreviewSize(w, h, params);
-
-                if (size != null) {
-
-                    params.setPreviewSize(size.width, size.height);
-                    mCamera.setParameters(params);
-                    mCamera.startPreview();
-
-                } else {
-                    // TODO: 10/18/15
-                }
+            if (size != null) {
+                params.setPreviewSize(size.width, size.height);
+                mCamera.setParameters(params);
+                mCamera.startPreview();
             } else {
-                // TODO: 10/18/15
-            }
-
-            try {
-                mCamera.setPreviewDisplay(viewHolder);
-                mCamera.setDisplayOrientation(90);
-            } catch (Throwable t) {
-                Logger.exception("Camera not loaded. Exception in setViewDisplay()");
-                // TODO: 10/18/15
+                cameraFailureListener.onCameraSetupFailed();
             }
         } else {
-            // TODO: 10/18/15
+            cameraFailureListener.onCameraSetupFailed();
         }
+
+        try {
+            mCamera.setDisplayOrientation(90);
+            mCamera.setPreviewDisplay(viewHolder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    @Override public void surfaceCreated(SurfaceHolder holder)
+    private void releaseCamera()
     {
+        mCamera.stopPreview();
+        mCamera.lock();
+        mCamera.release();
+        mCamera = null;
     }
 
-    @Override public void surfaceDestroyed(SurfaceHolder holder)
+    private void stopMediaRecorder()
     {
-        // Use Android life-cycle methods
+        mediaRecorder.stop();
+        mediaRecorder.reset();
+        mediaRecorder.release();
+        mediaRecorder = null;
     }
 
-    private Camera.Size getBestPreviewSize(int w, int h, Camera.Parameters p)
+    private Camera.Size getBestPreviewSize(int w, int h, @NonNull Camera.Parameters p)
     {
         Camera.Size result = null;
         for (Camera.Size size : p.getSupportedPreviewSizes()) {
@@ -176,14 +169,12 @@ public class CameraPreviewRecorder implements CameraPreviewListener
                 } else {
                     int resultArea = result.width * result.height;
                     int newArea = size.width * size.height;
-
-                    if (newArea > resultArea) {
-                        result = size;
-                    }
+                    if (newArea > resultArea) result = size;
                 }
             }
         }
-        return (result);
+
+        return result;
     }
 
     private MediaRecorder getMediaRecorder()
@@ -194,33 +185,9 @@ public class CameraPreviewRecorder implements CameraPreviewListener
             mediaRecorder.setMaxDuration(DEFAULT_MAX_DURATION);
             mediaRecorder.setOnInfoListener(getMaxDurationListener());
             mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
-//		Tag video with a 90 degree angle to tell VideoView how to display it
             mediaRecorder.setOrientationHint(90);
         }
         return mediaRecorder;
-    }
-
-
-    private void releaseMediaRecorder()
-    {
-        if (mediaRecorder != null) {
-            mediaRecorder.reset();
-            mediaRecorder.release();
-            mediaRecorder = null;
-        }
-
-        if (mCamera != null) {
-            mCamera.lock();
-        }
-    }
-
-    /** Release the camera for other applications. */
-    private void releaseCamera()
-    {
-        if (mCamera != null) {
-            mCamera.release();
-            mCamera = null;
-        }
     }
 
     private Camera attemptSetupCamera()
@@ -248,14 +215,12 @@ public class CameraPreviewRecorder implements CameraPreviewListener
         }
     }
 
-    // TODO: 10/18/15
     @Nullable private Camera getCameraFailure(String e)
     {
         // Camera is not available (in use or does not exist)
         Logger.exception(TAG + "\n" + e);
         return null;
     }
-
 
     private MediaRecorder.OnInfoListener getMaxDurationListener()
     {
@@ -273,9 +238,24 @@ public class CameraPreviewRecorder implements CameraPreviewListener
                     } else {
                         Logger.debugLog("MediaRecorder was null.");
                     }
-                    releaseMediaRecorder();
+                    stop();
                 }
             }
         };
+    }
+
+////unused
+
+    @Override public void surfaceCreated(SurfaceHolder holder)
+    {
+    }
+
+    @Override public void surfaceDestroyed(SurfaceHolder holder)
+    {
+    }
+
+    @Nullable @Override public IBinder onBind(Intent intent)
+    {
+        return null;
     }
 }

@@ -21,7 +21,14 @@
         android:theme="@style/AppTheme"
         >
 
-        <service android:name=".presenter.sensors.MagnetometerService" />
+        <service
+            android:name=".presenter.sensors.MagnetometerService"
+            android:exported="false"
+            />
+        <service
+            android:name=".presenter.camera.CameraPreviewRecorder"
+            android:exported="false"
+            />
 
         <activity
             android:name="com.jacmobile.halloween.view.MainActivity"
@@ -30,9 +37,10 @@
             android:theme="@style/NoTitle"
             >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
 

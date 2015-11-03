@@ -17,23 +17,23 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_alignParentBottom="true"
+        app:needle_blur_color="#00000000"
         app:max="100"
         app:units="@string/units"
         />
 
-
-    <!--<android.support.design.widget.FloatingActionButton-->
-    <!--android:id="@+id/fab_record"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_alignParentBottom="true"-->
-    <!--android:layout_alignParentRight="true"-->
-    <!--android:padding="8dp"-->
-    <!--android:layout_marginRight="8dp"-->
-    <!--android:layout_marginBottom="8dp"-->
-    <!--app:borderWidth="0dp"-->
-    <!--app:fabSize="mini"-->
-    <!--/>-->
-
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:padding="16dp"
+        android:src="@drawable/ic_record"
+        app:backgroundTint="@color/red"
+        android:layout_margin="16dp"
+        app:borderWidth="0dp"
+        app:fabSize="normal"
+        />
 
 </RelativeLayout>

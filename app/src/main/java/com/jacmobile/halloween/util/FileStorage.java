@@ -1,5 +1,6 @@
 package com.jacmobile.halloween.util;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -28,6 +29,7 @@ public class FileStorage
 
     public static class Builder
     {
+        private Uri uri;
         private String fileName;
         private String directoryPath;
         private String directoryName;
@@ -48,6 +50,12 @@ public class FileStorage
         {
             this.directoryName = directoryName;
             return this;
+        }
+
+        @Nullable public File createFile(Uri fileUri)
+        {
+            this.uri = fileUri;
+            return new FileStorage(this).newFile();
         }
 
         @Nullable public File createFile()

@@ -5,9 +5,6 @@ import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.jacmobile.halloween.BuildConfig;
-import com.jacmobile.halloween.util.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +20,6 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     private static int paused;
     private static int started;
     private static int stopped;
-
-    private CurrentState currentState;
-
-    public ActivityLifecycleMonitor()
-    {
-        this.currentState = new CurrentState();
-    }
 
 ////Static Utility Methods
 
@@ -95,53 +85,23 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     @Override public void onActivityResumed(Activity activity)
     {
         ++resumed;
-        Logger.debugLog(BuildConfig.APPLICATION_ID + " is visible: " + (started > stopped));
-        this.currentState.setActivityState(Lifecycle.RESUMED);
         postUpdate();
     }
 
     @Override public void onActivityPaused(Activity activity)
     {
         ++paused;
-        Logger.debugLog(BuildConfig.APPLICATION_ID + " is in foreground: " + (resumed > paused));
-        this.currentState.setActivityState(Lifecycle.PAUSED);
         postUpdate();
     }
 
     @Override public void onActivityStarted(Activity activity)
     {
         ++started;
-        Logger.debugLog(BuildConfig.APPLICATION_ID + " is in foreground: " + (resumed > paused));
-        this.currentState.setActivityState(Lifecycle.STARTED);
     }
 
     @Override public void onActivityStopped(Activity activity)
     {
         ++stopped;
-        Logger.debugLog(BuildConfig.APPLICATION_ID + " is visible: " + (started > stopped));
-        this.currentState.setActivityState(Lifecycle.STOPPED);
-    }
-
-////Lifecycle state
-
-    class CurrentState extends Lifecycle
-    {
-        private @Lifecycle.ActivityState int state;
-
-        public CurrentState()
-        {
-            this.state = STOPPED;
-        }
-
-        @Override @Lifecycle.ActivityState int getActivityState()
-        {
-            return state;
-        }
-
-        @Override void setActivityState(@ActivityState int state)
-        {
-            this.state = state;
-        }
     }
 
 ////unused

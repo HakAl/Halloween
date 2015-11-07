@@ -6,7 +6,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.jacmobile.halloween.model.SensorData;
-import com.jacmobile.halloween.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-import com.jacmobile.halloween.app.ActivityLifecycleMonitor;
+import com.jacmobile.halloween.app.lifecyclemonitor.ActivityLifecycleMonitor;
 import com.jacmobile.halloween.app.App;
 import com.jacmobile.halloween.presenter.sensors.Magnetometer;
 import com.jacmobile.halloween.util.ForApplication;

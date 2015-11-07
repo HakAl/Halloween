@@ -1,4 +1,4 @@
-package com.jacmobile.halloween.app;
+package com.jacmobile.halloween.app.lifecyclemonitor;
 
 import android.support.annotation.IntDef;
 

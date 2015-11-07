@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.jacmobile.halloween.app.ActivityLifecycleMonitor;
 import com.jacmobile.halloween.app.App;
 import com.jacmobile.halloween.model.SensorData;
+import com.jacmobile.halloween.model.SensorDataFileWriter;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -20,6 +20,7 @@ public class MagnetometerService extends Service implements SensorDataListener
 {
     @Inject Bus bus;
     @Inject Magnetometer magnetometer;
+    @Inject SensorDataFileWriter fileWriter;
 
     public static void start(Context context)
     {
@@ -39,6 +40,7 @@ public class MagnetometerService extends Service implements SensorDataListener
 
     @Override public int onStartCommand(Intent intent, int flags, int startId)
     {
+        fileWriter.initialize(this);
         magnetometer.resume(this);
         return super.onStartCommand(intent, flags, startId);
     }

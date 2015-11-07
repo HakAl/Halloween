@@ -22,6 +22,11 @@
         >
 
         <service
+            android:name=".model.FileStoreService"
+            android:exported="false"
+            />
+
+        <service
             android:name=".presenter.sensors.MagnetometerService"
             android:exported="false"
             />

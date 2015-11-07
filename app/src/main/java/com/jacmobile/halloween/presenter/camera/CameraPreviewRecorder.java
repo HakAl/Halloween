@@ -275,7 +275,6 @@ public class CameraPreviewRecorder extends Service implements CameraPreviewServi
         }
 
         if (camera != null) {
-
             Camera.Parameters params = camera.getParameters();
 
             if (params != null) {

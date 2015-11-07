@@ -14,7 +14,7 @@ import com.jacmobile.halloween.app.lifecyclemonitor.observers.OnStopCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCallbacks, LifecycleRegistry
+public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCallbacks, Subject
 {
     private static int resumed;
     private static int paused;
@@ -199,7 +199,7 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
         notifyObservers();
     }
 
-    //don't seem to be called
+////Don't seem to be called
     @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
     @Override public void onActivityDestroyed(Activity activity) {}

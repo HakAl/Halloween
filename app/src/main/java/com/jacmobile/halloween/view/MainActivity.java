@@ -3,6 +3,7 @@ package com.jacmobile.halloween.view;
 import android.Manifest;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import com.jacmobile.halloween.R;
 
@@ -16,7 +17,6 @@ import com.jacmobile.halloween.util.PermissionHelper;
  */
 public class MainActivity extends BaseActivity
 {
-    public static final String TAG = MainActivity.class.getSimpleName();
     public static final int CAMERA_REQUEST_CODE = 9;
 
     @Icicle public boolean isCameraAvailable = false;
@@ -24,14 +24,11 @@ public class MainActivity extends BaseActivity
     @Override public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         getAppComponent().inject(this);
 
         if (savedInstanceState == null) {
-
             setBaseContentView(R.layout.activity_main);
             attemptStartCamera();
-
         } else {
             if (isCameraAvailable) {
                 startApplication();
@@ -41,7 +38,7 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    @Override public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -49,18 +46,12 @@ public class MainActivity extends BaseActivity
             this.isCameraAvailable = PermissionHelper.hasPermission(this, permissions);
             if (isCameraAvailable) {
                 startApplication();
+            } else {
+                cameraFailedToStart();
             }
         } else {
-            //no camera permission
             log("no camera permission");
         }
-    }
-
-    private void cameraFailedToStart()
-    {
-        log("cameraFailedToStart()");
-        isCameraAvailable = false;
-        //switch to no camera view
     }
 
     private void startApplication()
@@ -78,15 +69,27 @@ public class MainActivity extends BaseActivity
         if (DeviceUtils.hasCameraHardware(this)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        && PermissionHelper.hasPermission(this, Manifest.permission.CAMERA)) {
+                        && PermissionHelper.hasPermission(this, Manifest.permission.CAMERA)
+                        && PermissionHelper.hasPermission(this, Manifest.permission.RECORD_AUDIO)) {
                     startApplication();
                 } else {
-                    String[] perms = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                    String[] perms = {Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.RECORD_AUDIO};
                     requestPermissions(perms, 9);
                 }
+            } else {
+                startApplication();
             }
         } else {
             cameraFailedToStart();
         }
+    }
+
+    private void cameraFailedToStart()
+    {
+        log("cameraFailedToStart()");
+        isCameraAvailable = false;
+        setContentViewState(MultiStateViewState.ERROR);
     }
 }

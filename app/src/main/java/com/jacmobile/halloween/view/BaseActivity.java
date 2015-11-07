@@ -33,14 +33,14 @@ public abstract class BaseActivity extends AppCompatActivity
     }
 
 
-    public void setBaseContentView(int layoutResId)
+    protected void setBaseContentView(int layoutResId)
     {
         this.viewState = MultiStateViewState.CONTENT;
         contentView.setViewForState(layoutResId, viewState);
     }
 
     /** CONTENT, ERROR, EMPTY, LOADING */
-    public void setContentViewState(@MultiStateViewState.ViewState int contentViewState)
+    protected void setContentViewState(@MultiStateViewState.ViewState int contentViewState)
     {
         this.viewState = contentViewState;
 
@@ -50,7 +50,6 @@ public abstract class BaseActivity extends AppCompatActivity
             // TODO: 10/25/15
         }
     }
-
 
     @Override public void onCreate(Bundle savedInstanceState)
     {

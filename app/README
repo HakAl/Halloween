@@ -4,7 +4,7 @@
 
 X tabs --> camera preview / file storage / media viewer
 
-camera preview widget controls
+Xcamera preview widget control
 X magnetometer output panel
 
 X SensorMangager / Magnetometer setup
@@ -13,21 +13,21 @@ Tie in android.hardware.GeomagneticField
 media player fragment VideoView?
 Control buttons for media player
 
-storage for sensor data Realm? or ?
-storage for video files
-
+SQLite SensorData
 
 ---
 
 vibrate on high sensor reading
 
 add settings button. where?
+settings storage location for video files
 make settings screen. sampling interval
 add magnetometer calibration to settings
+license screen / attribution
 
 ---
 
 GCM
 server to accept data to compare
 
-video sharing
+video, data sharing

@@ -37,6 +37,6 @@
     <color name="blue">#0091ea</color>
     <color name="pressed_blue">#0277bd</color>
     <color name="yellow">#fffffbae</color>
-    <color name="red">#fff10800</color>
+    <color name="red">#f10800</color>
     <color name="list_item_pressed">#1A000000</color>
 </resources>

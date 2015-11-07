@@ -1,9 +1,9 @@
 package com.jacmobile.halloween.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -20,11 +20,8 @@ import com.jacmobile.halloween.model.SensorData;
 import com.jacmobile.halloween.presenter.camera.CameraFailureListener;
 import com.jacmobile.halloween.presenter.camera.CameraPreviewRecorder;
 import com.jacmobile.halloween.presenter.sensors.MagnetometerService;
-import com.jacmobile.halloween.util.DeviceUtils;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
-
-import java.io.File;
 
 import javax.inject.Inject;
 
@@ -38,7 +35,10 @@ public class CameraPreviewFragment extends Fragment implements CameraFailureList
 
     @Bind(R.id.magnetometer) VelocimeterView magnetometer;
     @Bind(R.id.camera_preview) SurfaceView cameraPreview;
-    @Bind(R.id.fab_record) FloatingActionButton cameraToggle;
+    @Bind(R.id.fab_record) FloatingActionButton recordButton;
+    @Bind(R.id.fab_stop) FloatingActionButton stopButton;
+
+    boolean isRecording = false;
 
     public static CameraPreviewFragment newInstance()
     {
@@ -62,35 +62,57 @@ public class CameraPreviewFragment extends Fragment implements CameraFailureList
     {
         super.onResume();
         bus.register(this);
-        getContext().startService(new Intent(getContext(), MagnetometerService.class));
-        recordPressed();
+        MagnetometerService.start(getContext());
+        if (((MainActivity) getActivity()).isCameraAvailable) {
+            CameraPreviewRecorder.start(getContext());
+            cameraPreviewRecorder.startCameraPreview(cameraPreview, this);
+            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            stopButton.setOnClickListener(getCameraToggle());
+            recordButton.setOnClickListener(getCameraToggle());
+        }
     }
 
     @Override public void onPause()
     {
         super.onPause();
         bus.unregister(this);
-        stopPressed();
-    }
-
-    private void recordPressed()
-    {
-        if (((MainActivity)getActivity()).isCameraAvailable) {
-            getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-            getContext().startService(new Intent(getContext(), CameraPreviewRecorder.class));
-            cameraPreviewRecorder.startCameraPreview(cameraPreview, this);
-            SRecording file = new SRecording(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_MOVIES).getPath(), getContext().getPackageName());
-            cameraPreviewRecorder.startRecording(file.getFile());
+        MagnetometerService.stop(getContext());
+        if (((MainActivity) getActivity()).isCameraAvailable){
+            cameraPreviewRecorder.pauseCameraPreview();
+            CameraPreviewRecorder.stop(getContext());
         }
     }
 
-    private void stopPressed()
+    @NonNull private View.OnClickListener getCameraToggle()
     {
-        if (((MainActivity)getActivity()).isCameraAvailable) {
-            cameraPreviewRecorder.stop();
-            getContext().stopService(new Intent(getContext(), CameraPreviewRecorder.class));
-        }
+        return new View.OnClickListener() {
+            @Override public void onClick(View v)
+            {
+                if (isRecording) {
+                    stopMediaRecording();
+                    isRecording = false;
+                    stopButton.setVisibility(View.GONE);
+                    recordButton.setVisibility(View.VISIBLE);
+                } else {
+                    recordMediaFile();
+                    isRecording = true;
+                    recordButton.setVisibility(View.GONE);
+                    stopButton.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+    }
+
+    private void recordMediaFile()
+    {
+        SRecording file = new SRecording(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_MOVIES).getPath(), getContext().getPackageName());
+        cameraPreviewRecorder.startRecording(file.getFile());
+    }
+
+    private void stopMediaRecording()
+    {
+        cameraPreviewRecorder.stopRecording();
     }
 
     @Subscribe public void event(SensorData sensorData)

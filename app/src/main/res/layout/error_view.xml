@@ -9,8 +9,9 @@
     <TextView
         android:textSize="24sp"
         android:textStyle="italic"
-        android:alpha=".87f"
-        android:textColor="Unable to setup camera."
+        android:alpha=".87"
+        android:textColor="@color/red"
+        android:text="Unable to setup camera."
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

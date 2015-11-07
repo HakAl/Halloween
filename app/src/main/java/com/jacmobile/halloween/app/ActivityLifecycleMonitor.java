@@ -5,21 +5,59 @@ import android.app.Application;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.jacmobile.halloween.util.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCallbacks, Subject
 {
-    public static final String TAG = ActivityLifecycleMonitor.class.getSimpleName();
-
-    private List<Observer> observers = new ArrayList<>();
-    private boolean changed;
-    private final Object mutex = new Object();
-
     private static int resumed;
     private static int paused;
     private static int started;
     private static int stopped;
+
+    private boolean changed;
+    private final Object mutex = new Object();
+    private List<Observer> observers = new ArrayList<>();
+
+    @Override public void onActivityResumed(Activity activity)
+    {
+        ++resumed;
+        Logger.debugLog(activity.getClass().getSimpleName() + " onResume() called.");
+    }
+
+    @Override public void onActivityPaused(Activity activity)
+    {
+        ++paused;
+        Logger.debugLog(activity.getClass().getSimpleName() + " onPause() called.");
+    }
+
+    @Override public void onActivityStarted(Activity activity)
+    {
+        ++started;
+        Logger.debugLog(activity.getClass().getSimpleName() + " onStart() called.");
+    }
+
+    @Override public void onActivityStopped(Activity activity)
+    {
+        ++stopped;
+        Logger.debugLog(activity.getClass().getSimpleName() + " onStop() called.");
+    }
+
+    @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState)
+    {
+        Logger.debugLog(activity.getClass().getSimpleName() + " onCreate() called.");
+    }
+
+    @Override public void onActivityDestroyed(Activity activity)
+    {
+        Logger.debugLog(activity.getClass().getSimpleName() + " onDestroy() called.");
+    }
+
+    @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState)
+    {
+    }
 
 ////Static Utility Methods
 
@@ -80,42 +118,5 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     {
         this.changed = true;
         notifyObservers();
-    }
-
-    @Override public void onActivityResumed(Activity activity)
-    {
-        ++resumed;
-        postUpdate();
-    }
-
-    @Override public void onActivityPaused(Activity activity)
-    {
-        ++paused;
-        postUpdate();
-    }
-
-    @Override public void onActivityStarted(Activity activity)
-    {
-        ++started;
-    }
-
-    @Override public void onActivityStopped(Activity activity)
-    {
-        ++stopped;
-    }
-
-////unused
-
-    @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState)
-    {
-
-    }
-
-    @Override public void onActivityDestroyed(Activity activity)
-    {
-    }
-
-    @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState)
-    {
     }
 }

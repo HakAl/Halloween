@@ -21,7 +21,13 @@ public class SRecording
         this.file = new FileStorage.Builder()
                 .directoryPath(directoryPath)
                 .directoryName(directoryName)
-                .fileName(TAG+FILE_SEPERATOR+dt.toLocalDateTime()+FILE_EXTENSION)
+                .fileName(TAG+FILE_SEPERATOR +
+                        dt.getYear()+
+                        dt.getMonthOfYear()+
+                        dt.getDayOfMonth()+
+                        dt.getHourOfDay()+
+                        dt.getMinuteOfDay()+
+                        dt.getSecondOfDay()+FILE_EXTENSION)
                 .createFile();
     }
 

@@ -32,7 +32,6 @@ public class Magnetometer implements SensorEventListener
     public Magnetometer(SensorManager sensorManager)
     {
         this.sensorManager = sensorManager;
-        this.magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         this.eventValues = new ArrayList<>(SAMPLE_SIZE);
     }
 
@@ -40,6 +39,7 @@ public class Magnetometer implements SensorEventListener
     {
         this.sensorData = new SensorData();
         this.sensorDataListener = sensorDataListener;
+        this.magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_UI);
     }
 
@@ -50,7 +50,6 @@ public class Magnetometer implements SensorEventListener
         sensorData = null;
         magnetometer = null;
         eventValues.clear();
-        eventValues = null;
     }
 
     @Override public void onSensorChanged(SensorEvent event)

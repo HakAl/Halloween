@@ -10,17 +10,12 @@ import com.jacmobile.halloween.app.lifecyclemonitor.observers.OnPauseCallback;
 import com.jacmobile.halloween.app.lifecyclemonitor.observers.OnResumeCallback;
 import com.jacmobile.halloween.app.lifecyclemonitor.observers.OnStartCallback;
 import com.jacmobile.halloween.app.lifecyclemonitor.observers.OnStopCallback;
-import com.jacmobile.halloween.util.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCallbacks, LifecycleRegistry
 {
-    private static final int STOP = 0;
-    private static final int START = 1;
-    private static final int RESUME = 2;
-    private static final int PAUSE = 3;
     private static int resumed;
     private static int paused;
     private static int started;
@@ -37,28 +32,24 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     {
         ++resumed;
         postUpdate();
-        Logger.debugLog(activity.getClass().getSimpleName() + " onResume() called.");
     }
 
     @Override public void onActivityPaused(Activity activity)
     {
         ++paused;
         postUpdate();
-        Logger.debugLog(activity.getClass().getSimpleName() + " onPause() called.");
     }
 
     @Override public void onActivityStarted(Activity activity)
     {
         ++started;
         postUpdate();
-        Logger.debugLog(activity.getClass().getSimpleName() + " onStart() called.");
     }
 
     @Override public void onActivityStopped(Activity activity)
     {
         ++stopped;
         postUpdate();
-        Logger.debugLog(activity.getClass().getSimpleName() + " onStop() called.");
     }
 
 ////Static Utility Methods
@@ -131,10 +122,10 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
      */
     @Override public void notifyObservers()
     {
-        if (stopObservers.size() > 0) notify(STOP);
-        if (startObservers.size() > 0)  notify(START);
-        if (pauseObservers.size() > 0)  notify(PAUSE);
-        if (resumeObservers.size() > 0)  notify(RESUME);
+        if (stopObservers.size() > 0) notify(Lifecycle.STOPPED);
+        if (startObservers.size() > 0)  notify(Lifecycle.STARTED);
+        if (pauseObservers.size() > 0)  notify(Lifecycle.PAUSED);
+        if (resumeObservers.size() > 0)  notify(Lifecycle.RESUMED);
     }
 
     void notify(int which)
@@ -146,35 +137,35 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
         synchronized (mutex) {
             if (!changed) return;
 
-            if (which == STOP) {
+            if (which == Lifecycle.STOPPED) {
                 stopObserversLocal = new ArrayList<>(this.stopObservers);
             }
-            if (which == START) {
+            if (which == Lifecycle.STARTED) {
                 startObserversLocal = new ArrayList<>(this.startObservers);
             }
-            if (which == RESUME) {
+            if (which == Lifecycle.RESUMED) {
                 resumeObserversLocal = new ArrayList<>(this.resumeObservers);
             }
-            if (which == PAUSE) {
+            if (which == Lifecycle.PAUSED) {
                 pauseObserversLocal = new ArrayList<>(this.pauseObservers);
             }
 
-            if (which == STOP) {
+            if (which == Lifecycle.STOPPED) {
                 for (Observer obj : stopObserversLocal) {
                     obj.update();
                 }
             }
-            if (which == START) {
+            if (which == Lifecycle.STARTED) {
                 for (Observer obj : startObserversLocal) {
                     obj.update();
                 }
             }
-            if (which == RESUME) {
+            if (which == Lifecycle.RESUMED) {
                 for (Observer obj : resumeObserversLocal) {
                     obj.update();
                 }
             }
-            if (which == PAUSE) {
+            if (which == Lifecycle.PAUSED) {
                 for (Observer obj : pauseObserversLocal) {
                     obj.update();
                 }
@@ -196,9 +187,6 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     {
         this.changed = true;
         notifyObservers();
-        if (pauseObservers.size() > 0) notifyObservers();
-        if (resumeObservers.size() > 0) notifyObservers();
-        if (startObservers.size() > 0) notifyObservers();
     }
 
     //don't seem to be called

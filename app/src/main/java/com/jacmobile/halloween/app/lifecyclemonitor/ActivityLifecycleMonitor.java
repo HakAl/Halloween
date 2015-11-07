@@ -66,43 +66,13 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
 
 ////Register an lifecycle callback to get updates
 
-    @Override public void register(@NonNull OnStartCallback observer)
+    @Override public void register(@NonNull Observer obj)
     {
         synchronized (mutex) {
-            if (!startObservers.contains(observer)) {
-                observer.setSubject(ActivityLifecycleMonitor.this);
-                startObservers.add(observer);
-            }
-        }
-    }
-
-    @Override public void register(@NonNull OnPauseCallback observer)
-    {
-        synchronized (mutex) {
-            if (!pauseObservers.contains(observer)) {
-                observer.setSubject(ActivityLifecycleMonitor.this);
-                pauseObservers.add(observer);
-            }
-        }
-    }
-
-    @Override public void register(@NonNull OnStopCallback observer)
-    {
-        synchronized (mutex) {
-            if (!stopObservers.contains(observer)) {
-                observer.setSubject(this);
-                stopObservers.add(observer);
-            }
-        }
-    }
-
-    @Override public void register(@NonNull OnResumeCallback observer)
-    {
-        synchronized (mutex) {
-            if (!resumeObservers.contains(observer)) {
-                observer.setSubject(this);
-                resumeObservers.add(observer);
-            }
+            if (obj instanceof OnPauseCallback) registerPause((OnPauseCallback) obj);
+            if (obj instanceof OnStartCallback) registerStart((OnStartCallback) obj);
+            if (obj instanceof OnResumeCallback) registerResume((OnResumeCallback) obj);
+            if (obj instanceof OnStopCallback) registerStop((OnStopCallback) obj);
         }
     }
 
@@ -117,18 +87,58 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
     }
 
     /**
-     * Synchronization is used to make sure any observer
-     * registered after message is received is not notified
+     * Synchronization is used to make sure any observer registered after message is received is not
+     * notified
      */
     @Override public void notifyObservers()
     {
         if (stopObservers.size() > 0) notify(Lifecycle.STOPPED);
-        if (startObservers.size() > 0)  notify(Lifecycle.STARTED);
-        if (pauseObservers.size() > 0)  notify(Lifecycle.PAUSED);
-        if (resumeObservers.size() > 0)  notify(Lifecycle.RESUMED);
+        if (startObservers.size() > 0) notify(Lifecycle.STARTED);
+        if (pauseObservers.size() > 0) notify(Lifecycle.PAUSED);
+        if (resumeObservers.size() > 0) notify(Lifecycle.RESUMED);
     }
 
-    void notify(int which)
+    private void registerStart(@NonNull OnStartCallback observer)
+    {
+        synchronized (mutex) {
+            if (!startObservers.contains(observer)) {
+                observer.setSubject(ActivityLifecycleMonitor.this);
+                startObservers.add(observer);
+            }
+        }
+    }
+
+    private void registerPause(@NonNull OnPauseCallback observer)
+    {
+        synchronized (mutex) {
+            if (!pauseObservers.contains(observer)) {
+                observer.setSubject(ActivityLifecycleMonitor.this);
+                pauseObservers.add(observer);
+            }
+        }
+    }
+
+    private void registerStop(@NonNull OnStopCallback observer)
+    {
+        synchronized (mutex) {
+            if (!stopObservers.contains(observer)) {
+                observer.setSubject(this);
+                stopObservers.add(observer);
+            }
+        }
+    }
+
+    private void registerResume(@NonNull OnResumeCallback observer)
+    {
+        synchronized (mutex) {
+            if (!resumeObservers.contains(observer)) {
+                observer.setSubject(this);
+                resumeObservers.add(observer);
+            }
+        }
+    }
+
+    private void notify(int which)
     {
         List<OnStopCallback> stopObserversLocal = null;
         List<OnStartCallback> startObserversLocal = null;
@@ -191,6 +201,8 @@ public class ActivityLifecycleMonitor implements Application.ActivityLifecycleCa
 
     //don't seem to be called
     @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+
     @Override public void onActivityDestroyed(Activity activity) {}
+
     @Override public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 }
